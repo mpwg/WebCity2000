@@ -1,14 +1,14 @@
 # WebCity2000
 
-Lokales Städtebauspiel mit Three.js und einer Wirtschaftssimulation im Worker.
-Integrierte Clean-Room-Pakete: Stadtbild `d0776b4`, Simulationsprüfung
-`1117be7` (letzter geprüfter Paketcommit), Bedienprüfung `efa05d4`.
+WebCity2000 ist ein lokales Städtebauspiel mit einer orthografischen
+Modelllandschaft und einer Wirtschaftssimulation im Worker. Die Spielregeln
+und Abnahmekriterien stehen in [SPEZIFIKATION.md](SPEZIFIKATION.md).
 
 ## Start und statischer Build
 
 ```sh
 bun install --frozen-lockfile
-bun run dev
+bun run dev --host 127.0.0.1
 ```
 
 Für die lokale Nutzung des statischen Builds:
@@ -31,11 +31,13 @@ bun run build
 bun run benchmark
 ```
 
-Browserprüfungen außerhalb der Sandbox ausführen:
+Die automatisierten Browserprüfungen laufen headless im Terminal. Ein
+Computer-Use-Werkzeug und eine angemeldete Desktop-Sitzung sind dafür
+nicht erforderlich.
 
 ```sh
-bunx playwright install chromium firefox webkit
-bun run test:browser
+bunx --bun playwright install chromium firefox webkit
+bun run test:browser --workers=1
 ```
 
 Playwright startet seinen Testserver selbst. Chromium nutzt das mitgelieferte
@@ -46,9 +48,11 @@ Wiederaufbau, I-Taste ohne versehentlichen Bau und Fortsetzen nach Speichern.
 
 ## Verifizierter Stand und offene Abnahme
 
-Typecheck, 25 Headless-Tests und statischer Build erfolgreich. Vite meldet
-einen Hauptchunk von rund 521 kB (138 kB gzip); dies ist ein Größenhinweis.
-Formatierungsdiff geprüft. Keine Browser oder Webserver in der Sandbox gestartet.
+Typecheck, 25 Tests für Simulation und Speicherung, statischer Build und
+alle sechs headless Playwright-Fälle bestanden. Der Spielablauf umfasst
+Aufbau, Wachstum, Wassermangel, Wiederaufbau und Fortsetzen nach dem Laden.
+Ein zusätzlicher manueller Kurztest in Safari bestätigte Spielstart und
+Straßenbau. Vite meldet einen Hauptchunk von rund 521 kB (138 kB gzip).
 
 Headless-Benchmark auf macOS arm64 mit Bun 1.4.4, je 20 Wirtschaftsrunden:
 
@@ -70,8 +74,6 @@ Hauptthread; Antworten des Workers können während einer Wirtschaftsrunde warte
 
 Offene Abnahmepunkte:
 
-- Alle sechs Playwright-Fälle in Chromium, Firefox und WebKit außerhalb der
-  Sandbox ausführen; Wasser fehlt und automatische Erholung visuell bestätigen.
 - Vollständige Browser-Leistungsprüfung auf M1 mit 8 GB: beide Lastszenarien,
   1×/2×/4×, FPS und Eingabelatenz während Wirtschaftsrunden, Bau-/Inspektions-
   Antwortzeit, Zoom/Schwenken, Speicherverbrauch und längerer Betrieb.

@@ -73,7 +73,9 @@ test("Grundversorgung erholt sich in der aktiven Auswahl und nach Fortsetzen", a
 
   await inspectAt(20, 15);
   await expect(inspector).toContainText("✓");
-  const residents = (await inspector.textContent())!.match(/\d+ Einwohner/)![0];
+  const residents = Number(
+    (await inspector.textContent())!.match(/(\d+) Einwohner/)![1],
+  );
   await page.locator("#menuButton").click();
   await page.getByRole("button", { name: "Speichern", exact: true }).click();
   await expect(page.locator("#menuStatus")).toHaveText(
@@ -86,7 +88,12 @@ test("Grundversorgung erholt sich in der aktiven Auswahl und nach Fortsetzen", a
   x = 16;
   y = 16;
   await inspectAt(20, 15);
-  await expect(inspector).toContainText(residents);
+  // Fortsetzen starts the clock. A round can finish before Pause is processed.
+  await expect(inspector).toContainText(/\d+ Einwohner/);
+  const resumedResidents = Number(
+    (await inspector.textContent())!.match(/(\d+) Einwohner/)![1],
+  );
+  expect(resumedResidents).toBeGreaterThanOrEqual(residents);
   await expect(inspector).toContainText("✓");
   await page.locator('[data-kind="school"]').click();
   await moveTo(21, 15);
