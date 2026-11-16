@@ -1,8 +1,0 @@
-/** Ganzzahliger aggregierter Maximalfluss. Ein Lauf pro Ressource/Netz,
- * keine Wegsuche für einzelne Haushalte. Iterative Pfadsuche ohne Rekursionslimit. */
-export class Flow {
- edges:{to:number;reverse:number;capacity:number;initial:number}[][];
- constructor(size:number){this.edges=Array.from({length:size},()=>[]);}
- add(from:number,to:number,capacity:number){const edge={to,reverse:this.edges[to].length,capacity,initial:capacity};this.edges[from].push(edge);this.edges[to].push({to:from,reverse:this.edges[from].length-1,capacity:0,initial:0});return edge;}
- run(source:number,sink:number){let total=0;const n=this.edges.length,level=new Int32Array(n),ptr=new Int32Array(n),queue=new Int32Array(n);for(;;){level.fill(-1);level[source]=0;queue[0]=source;let end=1;for(let i=0;i<end;i++){const u=queue[i];for(const e of this.edges[u])if(e.capacity>0&&level[e.to]<0){level[e.to]=level[u]+1;queue[end++]=e.to;}}if(level[sink]<0)return total;ptr.fill(0);const path:number[]=[source];while(path.length){const u=path[path.length-1];if(u===sink){let amount=Number.MAX_SAFE_INTEGER;for(let i=0;i<path.length-1;i++)amount=Math.min(amount,this.edges[path[i]][ptr[path[i]]].capacity);for(let i=0;i<path.length-1;i++){const edge=this.edges[path[i]][ptr[path[i]]];edge.capacity-=amount;this.edges[edge.to][edge.reverse].capacity+=amount;}total+=amount;path.length=1;continue;}while(ptr[u]<this.edges[u].length){const edge=this.edges[u][ptr[u]];if(edge.capacity>0&&level[edge.to]===level[u]+1)break;ptr[u]++;}if(ptr[u]===this.edges[u].length){level[u]=-1;path.pop();if(path.length)ptr[path[path.length-1]]++;}else path.push(this.edges[u][ptr[u]].to);}}}
-}
