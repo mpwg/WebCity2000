@@ -21,6 +21,7 @@ bunx --bun vite preview --host 127.0.0.1
 `dist/` enthält die statischen Dateien; über HTTP auf localhost öffnen
 (Worker und Module benötigen einen Server). Keine Veröffentlichung erfolgt.
 Spielstände liegen lokal in IndexedDB; Export sichert eine JSON-Datei.
+Der Build zielt auf aktuelle Desktop-Browser und verwendet ESNext.
 
 ## Prüfungen
 
@@ -52,7 +53,7 @@ Typecheck, 25 Tests für Simulation und Speicherung, statischer Build und
 alle sechs headless Playwright-Fälle bestanden. Der Spielablauf umfasst
 Aufbau, Wachstum, Wassermangel, Wiederaufbau und Fortsetzen nach dem Laden.
 Ein zusätzlicher manueller Kurztest in Safari bestätigte Spielstart und
-Straßenbau. Vite meldet einen Hauptchunk von rund 521 kB (138 kB gzip).
+Straßenbau. Vite meldet einen Hauptchunk von rund 579 kB (150 kB gzip).
 
 Headless-Benchmark auf macOS arm64 mit Bun 1.4.4, je 20 Wirtschaftsrunden:
 
