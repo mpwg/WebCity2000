@@ -1,5 +1,53 @@
-import {Simulation,type Save} from './simulation';
-const db=()=>new Promise<IDBDatabase>((resolve,reject)=>{const r=indexedDB.open('webcity2000',1);r.onupgradeneeded=()=>r.result.createObjectStore('saves');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
-export async function saveGame(slot:string,data:Save){Simulation.load(data);const database=await db();try{await new Promise<void>((resolve,reject)=>{const tx=database.transaction('saves','readwrite');tx.objectStore('saves').put(data,slot);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}finally{database.close();}}
-export async function loadGame(slot:string):Promise<Save|undefined>{const database=await db();try{return await new Promise((resolve,reject)=>{const r=database.transaction('saves').objectStore('saves').get(slot);r.onsuccess=()=>{try{if(r.result)Simulation.load(r.result);resolve(r.result);}catch(e){reject(e);}};r.onerror=()=>reject(r.error);});}finally{database.close();}}
-export async function latestGame(){for(const slot of ['latest','manual','auto0','auto1','auto2']){try{const save=await loadGame(slot);if(save)return save;}catch{/* Nächsten intakten Stand anbieten. */}}return undefined;}
+import { Simulation, type Save } from "./simulation";
+const db = () =>
+  new Promise<IDBDatabase>((resolve, reject) => {
+    const r = indexedDB.open("webcity2000", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("saves");
+    r.onsuccess = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  });
+export async function saveGame(slot: string, data: Save) {
+  Simulation.load(data);
+  const database = await db();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = database.transaction("saves", "readwrite");
+      tx.objectStore("saves").put(data, slot);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  } finally {
+    database.close();
+  }
+}
+export async function loadGame(slot: string): Promise<Save | undefined> {
+  const database = await db();
+  try {
+    return await new Promise((resolve, reject) => {
+      const r = database.transaction("saves").objectStore("saves").get(slot);
+      r.onsuccess = () => {
+        try {
+          if (r.result) Simulation.load(r.result);
+          resolve(r.result);
+        } catch (e) {
+          reject(e);
+        }
+      };
+      r.onerror = () => reject(r.error);
+    });
+  } finally {
+    database.close();
+  }
+}
+export async function latestGame() {
+  for (const slot of ["latest", "manual", "auto0", "auto1", "auto2"]) {
+    try {
+      const save = await loadGame(slot);
+      if (save) return save;
+    } catch {
+      /* Nächsten intakten Stand anbieten. */
+    }
+  }
+  return undefined;
+}

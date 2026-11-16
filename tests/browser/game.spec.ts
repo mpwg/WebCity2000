@@ -1,4 +1,31 @@
-import {test,expect} from '@playwright/test';
-test('Stadt starten, bauen, Engpass untersuchen, speichern und fortsetzen',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.getByRole('button',{name:'Tutorial starten'}).click();const canvas=page.locator('#world canvas');await canvas.focus();await page.keyboard.press('Enter');await expect(page.locator('#notice')).toContainText('ausgeführt');await page.getByRole('button',{name:'Wohnzone'}).click();await canvas.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');await expect(page.locator('#notice')).toContainText('ausgeführt');await page.waitForTimeout(1200);await page.getByRole('button',{name:'Untersuchen'}).click();await canvas.focus();await page.keyboard.press('Enter');await expect(page.locator('#inspect')).toContainText('Markt');await page.getByRole('button',{name:'Spielmenü öffnen'}).click();await page.getByRole('button',{name:'Speichern',exact:true}).click();await expect(page.locator('#menuStatus')).toContainText('gespeichert');await page.reload();await page.getByRole('button',{name:'Fortsetzen',exact:true}).click();await expect(page.locator('#menu')).not.toBeVisible();await expect(page.locator('#money')).not.toHaveText('20.000 ¤');expect(errors).toEqual([]);
+import { test, expect } from "@playwright/test";
+test("Stadt starten, bauen, Engpass untersuchen, speichern und fortsetzen", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/");
+  await page.getByRole("button", { name: "Tutorial starten" }).click();
+  const canvas = page.locator("#world canvas");
+  await canvas.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#notice")).toContainText("ausgeführt");
+  await page.getByRole("button", { name: "Wohnzone" }).click();
+  await canvas.focus();
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#notice")).toContainText("ausgeführt");
+  await page.waitForTimeout(1200);
+  await page.getByRole("button", { name: "Untersuchen" }).click();
+  await canvas.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#inspect")).toContainText("Markt");
+  await page.getByRole("button", { name: "Spielmenü öffnen" }).click();
+  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+  await expect(page.locator("#menuStatus")).toContainText("gespeichert");
+  await page.reload();
+  await page.getByRole("button", { name: "Fortsetzen", exact: true }).click();
+  await expect(page.locator("#menu")).not.toBeVisible();
+  await expect(page.locator("#money")).not.toHaveText("20.000 ¤");
+  expect(errors).toEqual([]);
 });
